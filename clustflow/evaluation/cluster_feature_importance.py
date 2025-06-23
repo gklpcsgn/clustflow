@@ -1,3 +1,15 @@
+"""
+Feature importance analysis across clusters for clustflow.
+
+Uses ANOVA F-test for numeric features and Chi² for categorical features to assess which features differentiate clusters.
+
+Example
+-------
+>>> from clustflow.evaluation.cluster_feature_importance import compute_feature_importance
+>>> result = compute_feature_importance(X, cluster_labels, categorical_cols=['gender', 'region'])
+>>> print(result['numerical'].head())
+"""
+
 import pandas as pd
 import numpy as np
 from sklearn.feature_selection import f_classif, chi2
@@ -5,14 +17,32 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 def compute_feature_importance(X, cluster_labels, categorical_cols=None):
     """
-    X: pd.DataFrame of features
-    cluster_labels: array-like cluster assignments
-    categorical_cols: list of column names to treat as categorical
-    Returns: DataFrame with F or chi2 score and p-values
+    Computes statistical importance of features across clusters.
+
+    For numeric features:
+        - Uses ANOVA F-test (f_classif)
+    For categorical features:
+        - Uses Chi-squared test
+
+    Parameters
+    ----------
+    X : pd.DataFrame
+        Feature dataframe.
+    cluster_labels : array-like
+        Cluster assignments (used as class labels).
+    categorical_cols : list of str, optional
+        Column names to treat as categorical.
+
+    Returns
+    -------
+    dict
+        Dictionary with:
+        - 'numerical': DataFrame with F scores and p-values
+        - 'categorical': DataFrame with Chi² scores and p-values
     """
     X = X.copy()
     cluster_labels = np.asarray(cluster_labels)
-    
+
     if categorical_cols is None:
         categorical_cols = X.select_dtypes(include=['object', 'category']).columns.tolist()
 
@@ -29,7 +59,7 @@ def compute_feature_importance(X, cluster_labels, categorical_cols=None):
             'p_value': p_vals
         }).sort_values(by='score', ascending=False)
 
-    # Categorical: Chi2 test (requires non-negative integers)
+    # Categorical: Chi² test
     if categorical_cols:
         X_cat = X[categorical_cols].copy()
         for col in categorical_cols:

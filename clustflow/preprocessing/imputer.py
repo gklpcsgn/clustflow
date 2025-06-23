@@ -1,17 +1,58 @@
+"""
+Imputer module for clustflow.
+
+Provides per-column missing value imputation using strategies such as:
+- 'mean': fill with overall column mean
+- 'median': fill with overall column median
+- ('group_median', group_col): fill with group-wise median based on another column
+
+Example
+-------
+>>> from clustflow.preprocessing.imputer import Imputer
+>>> imputer = Imputer(strategy={
+...     'age': 'mean',
+...     'income': 'median',
+...     'education_level': ('group_median', 'region')
+... })
+>>> df_filled = imputer.fit_transform(df)
+"""
 
 import pandas as pd
 
 class Imputer:
+    """
+    Flexible imputer for handling missing values column-wise.
+
+    Parameters
+    ----------
+    strategy : dict
+        Dictionary specifying imputation strategy per column.
+        Values can be 'mean', 'median', or ('group_median', group_col).
+
+    Attributes
+    ----------
+    fill_values_ : dict
+        Stores computed fill values per column after fitting.
+    """
+
     def __init__(self, strategy: dict):
-        """
-        strategy: dict where keys are column names, values are:
-        - 'mean' / 'median'
-        - ('group_median', group_col)
-        """
         self.strategy = strategy
         self.fill_values_ = {}
 
     def fit(self, df):
+        """
+        Learns imputation values from the DataFrame.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Input DataFrame to fit on.
+
+        Returns
+        -------
+        self : Imputer
+            Fitted instance.
+        """
         for col, method in self.strategy.items():
             if method == 'mean':
                 self.fill_values_[col] = df[col].mean()
@@ -25,6 +66,19 @@ class Imputer:
         return self
 
     def transform(self, df):
+        """
+        Applies learned imputations to a new DataFrame.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Data to transform.
+
+        Returns
+        -------
+        df_copy : pd.DataFrame
+            Transformed DataFrame with missing values filled.
+        """
         df_copy = df.copy()
         for col, method in self.strategy.items():
             if method in ['mean', 'median']:
@@ -37,4 +91,17 @@ class Imputer:
         return df_copy
 
     def fit_transform(self, df):
+        """
+        Fits and transforms in a single step.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Input data.
+
+        Returns
+        -------
+        pd.DataFrame
+            Imputed data.
+        """
         return self.fit(df).transform(df)

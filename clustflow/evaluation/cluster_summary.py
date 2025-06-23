@@ -1,11 +1,39 @@
+"""
+Cluster summarization for clustflow.
+
+Computes descriptive statistics per cluster:
+- Mean for numeric columns
+- Mode for categorical columns
+- Label distribution (if `extra` label column is provided)
+
+Example
+-------
+>>> from clustflow.evaluation.cluster_summary import summarize_clusters
+>>> summary_df = summarize_clusters(X, labels, extra=df['target'], categorical_cols=['race', 'gender'])
+>>> print(summary_df.head())
+"""
+
 import pandas as pd
 
 def summarize_clusters(X, cluster_labels, extra=None, categorical_cols=None):
     """
-    X: feature dataframe
-    cluster_labels: array of cluster assignments
-    extra: pd.Series (e.g., target/control) to summarize per cluster
-    categorical_cols: list of categorical columns to summarize with mode
+    Produces summary statistics for each cluster.
+
+    Parameters
+    ----------
+    X : pd.DataFrame
+        Feature matrix.
+    cluster_labels : array-like
+        Cluster assignments.
+    extra : pd.Series, optional
+        Ground truth label or outcome column to include label breakdowns per cluster.
+    categorical_cols : list of str, optional
+        Columns to summarize by mode instead of mean.
+
+    Returns
+    -------
+    pd.DataFrame
+        Summary table indexed by cluster, with per-cluster means/modes and optional label ratios.
     """
     X = X.copy()
     X['cluster'] = cluster_labels
