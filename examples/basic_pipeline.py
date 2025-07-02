@@ -1,6 +1,12 @@
 import pandas as pd
 
-df = pd.read_csv("your_data.csv")  # Load your data
+# mock data loading
+df = pd.DataFrame({
+    'age': [25, 30, None, 22, 35],
+    'income': [50000, 60000, 55000, None, 70000],
+    'neighborhood_clean': ['A', 'B', 'A', 'C', None],
+    'controlled': [1, 0, 1, 0, 1]  # Example target variable
+})
 
 # Handle missing data
 from clustflow.dimensionality import PCAReducer
