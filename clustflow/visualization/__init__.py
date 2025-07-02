@@ -1,2 +1,4 @@
 from clustflow.visualization.embedding import plot_embeddings
+from clustflow.visualization.scatter import scatter_2d
+from clustflow.visualization.feature_importance import plot_top_features
 
