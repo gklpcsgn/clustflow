@@ -64,7 +64,7 @@ class Encoder:
             self.columns = categorical_cols
 
         if self.strategy == 'onehot':
-            self.encoder = OneHotEncoder(sparse=False, handle_unknown=self.handle_unknown)
+            self.encoder = OneHotEncoder(handle_unknown=self.handle_unknown)
         elif self.strategy == 'ordinal':
             self.encoder = OrdinalEncoder()
         else:
