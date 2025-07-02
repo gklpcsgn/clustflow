@@ -1,14 +1,11 @@
-from clustflow import set_seed
 import pandas as pd
 
-# Load your data
-df = pd.read_csv("your_data.csv")  # or whatever
-
-# Set reproducibility
-set_seed(42)
+df = pd.read_csv("your_data.csv")  # Load your data
 
 # Handle missing data
+from clustflow.dimensionality import PCAReducer
 from clustflow.preprocessing import Imputer
+from clustflow.clustering import KMeansCluster
 imputer = Imputer(strategy={
     'age': 'mean',
     'income': 'median',
@@ -22,11 +19,9 @@ encoder = Encoder(strategy='onehot')
 X = encoder.fit_transform(df_filled)
 
 # Dimensionality reduction (Optional)
-from clustflow.dimensionality import PCAReducer
 X_pca = PCAReducer(n_components=2).fit_transform(X)
 
 # Clustering
-from clustflow.clustering import KMeansCluster
 model = KMeansCluster(n_clusters=8)
 labels = model.fit_predict(X_pca)
 
