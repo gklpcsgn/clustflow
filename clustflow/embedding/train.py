@@ -22,7 +22,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
-from clustflow.embedding.attention import FlexibleAttentionEmbedding
+from clustflow.embedding.attention_embedding import FlexibleAttentionEmbedding
 
 def train_embedding(model, learning_rate=0.001, epochs=10, batch_size=32, x_cat=None, x_cont=None):
     """
