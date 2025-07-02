@@ -91,9 +91,14 @@ class Encoder:
         encoded = self.encoder.transform(df_copy[self.columns])
 
         if self.strategy == 'onehot':
+            feature_names = self.encoder.get_feature_names_out(self.columns)
+            if encoded.shape[1] != len(feature_names):
+                raise ValueError(
+                    f"Shape mismatch: encoded array has {encoded.shape[1]} columns, but expected {len(feature_names)}."
+                )
             encoded_df = pd.DataFrame(
                 encoded,
-                columns=self.encoder.get_feature_names_out(self.columns),
+                columns=feature_names,
                 index=df_copy.index
             )
         else:  # ordinal
