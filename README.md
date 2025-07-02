@@ -406,3 +406,52 @@ Heatmap of per-cluster summary stats (mean, mode, ratios).
 
 This toolkit is built to be used without deep ML expertise. Each module can be used standalone, and documentation includes walkthroughs and examples in the `examples/` folder.
 
+---
+
+## Usage
+
+### FlexibleAttentionEmbedding
+
+The `FlexibleAttentionEmbedding` class provides a flexible attention-based embedding layer for categorical and continuous features. It can optionally include a decoder for reconstruction. Example usage:
+
+```python
+from clustflow.embedding.attention_embedding import FlexibleAttentionEmbedding
+
+# Example usage
+cardinals = [10, 20, 30]  # Cardinalities of categorical features
+emb_dims = [4, 8, 12]     # Embedding dimensions for categorical features
+cont_dim = 5              # Number of continuous features
+embed_dim = 64            # Output embedding dimension
+n_heads = 4               # Number of attention heads
+depth = 2                 # Number of transformer encoder layers
+dropout = 0.1             # Dropout rate
+output_dim = 100          # Output dimension for decoder
+
+model = FlexibleAttentionEmbedding(cardinals, emb_dims, cont_dim, embed_dim, n_heads, depth, dropout, with_decoder=True, output_dim=output_dim)
+
+# Forward pass
+x_cat = torch.randint(0, 10, (32, len(cardinals)))  # Example categorical input
+x_cont = torch.randn(32, cont_dim)                 # Example continuous input
+embedding, reconstruction = model(x_cat, x_cont)
+print(embedding.shape)  # Should be [32, embed_dim]
+print(reconstruction.shape)  # Should be [32, output_dim]
+```
+
+### train_embedding
+
+The `train_embedding` function allows training the `FlexibleAttentionEmbedding` model in an unsupervised manner using reconstruction loss. Example usage:
+
+```python
+from clustflow.embedding.train import train_embedding
+
+# Example data
+x_cat = torch.randint(0, 10, (100, len(cardinals)))  # Example categorical input
+x_cont = torch.randn(100, cont_dim)                 # Example continuous input
+
+# Initialize the model
+model = FlexibleAttentionEmbedding(cardinals, emb_dims, cont_dim, embed_dim, n_heads, depth, dropout, with_decoder=True, output_dim=output_dim)
+
+# Train the model
+trained_model = train_embedding(model, learning_rate=0.001, epochs=10, batch_size=32, x_cat=x_cat, x_cont=x_cont)
+```
+
